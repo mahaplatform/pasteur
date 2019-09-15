@@ -13,6 +13,7 @@ var Pasteur = function () {
     _classCallCheck(this, Pasteur);
 
     this.callbacks = {};
+    this.debug = null;
     this.services = null;
     this.window = null;
     this.target = null;
@@ -21,6 +22,7 @@ var Pasteur = function () {
     this._handleRecieveResponse = this._handleRecieveResponse.bind(this);
     this._handleSendResponse = this._handleSendResponse.bind(this);
 
+    this.debug = config.debug || false;
     this.window = config.window;
     this.target = config.target;
     this.name = config.name;
@@ -47,13 +49,15 @@ var Pasteur = function () {
         success: success,
         failure: failure
       };
-      this.target.postMessage({
+      var message = {
         target: this.targetName,
         id: id,
         service: service,
         action: action,
         data: data
-      }, '*');
+      };
+      if (debug) console.log(this.name + ': sending request to ' + this.targetName, message);
+      this.target.postMessage(message, '*');
     }
   }, {
     key: '_getId',
@@ -75,6 +79,7 @@ var Pasteur = function () {
     value: function _handleRecieve(e) {
       var message = e.data;
       if (message.target !== this.name) return;
+      if (debug) console.log(this.name + ': received from ' + this.targetName, message);
       if (this.callbacks[message.id]) return this._handleRecieveResponse(message);
       this._handleRecieveRequest(message);
     }
@@ -103,14 +108,16 @@ var Pasteur = function () {
   }, {
     key: '_handleSendResponse',
     value: function _handleSendResponse(service, action, id, data, error) {
-      this.target.postMessage({
+      var message = {
         target: this.targetName,
         id: id,
         service: service,
         action: action,
         data: data,
         error: error
-      }, '*');
+      };
+      if (debug) console.log(this.name + ': sending response to ' + this.targetName, message);
+      this.target.postMessage(message, '*');
     }
   }, {
     key: '_handleSuccess',

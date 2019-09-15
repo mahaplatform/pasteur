@@ -1,6 +1,7 @@
 class Pasteur {
 
   callbacks = {}
+  debug = null
   services = null
   window = null
   target = null
@@ -11,6 +12,7 @@ class Pasteur {
   _handleSendResponse = this._handleSendResponse.bind(this)
 
   constructor(config) {
+    this.debug = config.debug || false
     this.window = config.window
     this.target = config.target
     this.name = config.name
@@ -33,13 +35,15 @@ class Pasteur {
       success,
       failure
     }
-    this.target.postMessage({
+    const message = {
       target: this.targetName,
       id,
       service,
       action,
       data
-    }, '*')
+    }
+    if(debug) console.log(`${this.name}: sending request to ${this.targetName}`, message)
+    this.target.postMessage(message, '*')
   }
 
   _getId() {
@@ -57,6 +61,7 @@ class Pasteur {
   _handleRecieve(e) {
     const message = e.data
     if(message.target !== this.name) return
+    if(debug) console.log(`${this.name}: received from ${this.targetName}`, message)
     if(this.callbacks[message.id]) return this._handleRecieveResponse(message)
     this._handleRecieveRequest(message)
   }
@@ -82,14 +87,16 @@ class Pasteur {
   }
 
   _handleSendResponse(service, action, id, data, error) {
-    this.target.postMessage({
+    const message = {
       target: this.targetName,
       id,
       service,
       action,
       data,
       error
-    }, '*')
+    }
+    if(debug) console.log(`${this.name}: sending response to ${this.targetName}`, message)
+    this.target.postMessage(message, '*')
   }
 
   _handleSuccess(message) {
