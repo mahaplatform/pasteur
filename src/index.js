@@ -13,10 +13,14 @@ class Pasteur {
   constructor(config) {
     this.window = config.window
     this.target = config.target
-    this.targetName = config.targetName
     this.name = config.name
-    this.services = config.services
+    this.targetName = config.targetName || this.name
+    this.services = config.services || {}
     this.window.addEventListener('message', this._handleRecieve, false)
+  }
+
+  addService(name, service) {
+    this.services[name] = service
   }
 
   send(service, action, data, success, failure) {

@@ -23,13 +23,18 @@ var Pasteur = function () {
 
     this.window = config.window;
     this.target = config.target;
-    this.targetName = config.targetName;
     this.name = config.name;
-    this.services = config.services;
+    this.targetName = config.targetName || this.name;
+    this.services = config.services || {};
     this.window.addEventListener('message', this._handleRecieve, false);
   }
 
   _createClass(Pasteur, [{
+    key: 'addService',
+    value: function addService(name, service) {
+      this.services[name] = service;
+    }
+  }, {
     key: 'send',
     value: function send(service, action, data, success, failure) {
       var id = this._getId();
