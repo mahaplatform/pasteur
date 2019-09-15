@@ -72,7 +72,7 @@ class Pasteur {
       if(!service) throw new Error(`service ${message.service} unknown`)
       const action = service[message.action]
       if(!action) throw new Error(`action ${message.action} unknown`)
-      const response = action()
+      const response = action(message.data)
       this._handleSendResponse(message.service, message.action, message.id, response)
     } catch(e) {
       this._handleSendResponse(message.service, message.action, message.id, null, e.toString())
