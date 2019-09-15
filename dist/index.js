@@ -35,6 +35,11 @@ var Pasteur = function () {
       this.services[name] = service;
     }
   }, {
+    key: 'close',
+    value: function close() {
+      this.window.removeEventListener('message', this._handleRecieve, false);
+    }
+  }, {
     key: 'send',
     value: function send(service, action, data, success, failure) {
       var id = this._getId();

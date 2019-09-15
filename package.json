@@ -1,6 +1,6 @@
 {
   "name": "pasteur",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A library for intra window communication",
   "main": "dist/index.js",
   "license": "ISC",

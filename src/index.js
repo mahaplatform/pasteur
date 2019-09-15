@@ -23,6 +23,10 @@ class Pasteur {
     this.services[name] = service
   }
 
+  close() {
+    this.window.removeEventListener('message', this._handleRecieve, false)
+  }
+
   send(service, action, data, success, failure) {
     const id = this._getId()
     this.callbacks[id] = {
