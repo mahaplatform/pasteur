@@ -56,7 +56,7 @@ var Pasteur = function () {
         action: action,
         data: data
       };
-      if (debug) console.log(this.name + ': sending request to ' + this.targetName, message);
+      if (this.debug) console.log(this.name + ': sending request to ' + this.targetName, message);
       this.target.postMessage(message, '*');
     }
   }, {
@@ -79,7 +79,7 @@ var Pasteur = function () {
     value: function _handleRecieve(e) {
       var message = e.data;
       if (message.target !== this.name) return;
-      if (debug) console.log(this.name + ': received from ' + this.targetName, message);
+      if (this.debug) console.log(this.name + ': received from ' + this.targetName, message);
       if (this.callbacks[message.id]) return this._handleRecieveResponse(message);
       this._handleRecieveRequest(message);
     }
@@ -116,7 +116,7 @@ var Pasteur = function () {
         data: data,
         error: error
       };
-      if (debug) console.log(this.name + ': sending response to ' + this.targetName, message);
+      if (this.debug) console.log(this.name + ': sending response to ' + this.targetName, message);
       this.target.postMessage(message, '*');
     }
   }, {
