@@ -64,6 +64,13 @@ var Pasteur = function () {
       return random.toString(36);
     }
   }, {
+    key: '_handleFailure',
+    value: function _handleFailure(message) {
+      var failure = this.callbacks[message.id].failure;
+
+      if (failure) failure(message.error);
+    }
+  }, {
     key: '_handleRecieve',
     value: function _handleRecieve(e) {
       var message = e.data;
@@ -88,12 +95,9 @@ var Pasteur = function () {
   }, {
     key: '_handleRecieveResponse',
     value: function _handleRecieveResponse(message) {
-      var _callbacks$message$id = this.callbacks[message.id],
-          success = _callbacks$message$id.success,
-          failure = _callbacks$message$id.failure;
-
-      if (message.error) failure(message.error);
-      if (message.data) success(message.data);
+      if (!this.callbacks[message.id]) return;
+      if (message.error) this._handleFailure(message);
+      if (message.data) this._handleSuccess(message);
       delete this.callbacks[message.id];
     }
   }, {
@@ -107,6 +111,13 @@ var Pasteur = function () {
         data: data,
         error: error
       }, '*');
+    }
+  }, {
+    key: '_handleSuccess',
+    value: function _handleSuccess(message) {
+      var success = this.callbacks[message.id].success;
+
+      if (success) success(message.data);
     }
   }]);
 

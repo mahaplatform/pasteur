@@ -49,6 +49,11 @@ class Pasteur {
     return random.toString(36)
   }
 
+  _handleFailure(message) {
+    const { failure } = this.callbacks[message.id]
+    if(failure) failure(message.error)
+  }
+
   _handleRecieve(e) {
     const message = e.data
     if(message.target !== this.name) return
@@ -70,9 +75,9 @@ class Pasteur {
   }
 
   _handleRecieveResponse(message) {
-    const { success, failure } = this.callbacks[message.id]
-    if(message.error) failure(message.error)
-    if(message.data) success(message.data)
+    if(!this.callbacks[message.id]) return
+    if(message.error) this._handleFailure(message)
+    if(message.data) this._handleSuccess(message)
     delete this.callbacks[message.id]
   }
 
@@ -85,6 +90,11 @@ class Pasteur {
       data,
       error
     }, '*')
+  }
+
+  _handleSuccess(message) {
+    const { success } = this.callbacks[message.id]
+    if(success) success(message.data)
   }
 
 }
