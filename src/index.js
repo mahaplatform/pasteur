@@ -2,7 +2,7 @@ class Pasteur {
 
   callbacks = {}
   debug = null
-  services = null
+  handlers = []
   window = null
   target = null
 
@@ -17,19 +17,18 @@ class Pasteur {
     this.target = config.target
     this.name = config.name
     this.targetName = config.targetName || this.name
-    this.services = config.services || {}
     this.window.addEventListener('message', this._handleRecieve, false)
-  }
-
-  addService(name, service) {
-    this.services[name] = service
   }
 
   close() {
     this.window.removeEventListener('message', this._handleRecieve, false)
   }
 
-  send(service, action, data, success, failure) {
+  on(event, handler) {
+    this.handlers.push({ event, handler})
+  }
+
+  send(event, data, success, failure) {
     const id = this._getId()
     this.callbacks[id] = {
       success,
@@ -38,8 +37,7 @@ class Pasteur {
     const message = {
       target: this.targetName,
       id,
-      service,
-      action,
+      event,
       data
     }
     if(this.debug) console.log(`${this.name}: sending request to ${this.targetName}`, message)
@@ -67,16 +65,17 @@ class Pasteur {
   }
 
   _handleRecieveRequest(message) {
-    try {
-      const service = this.services[message.service]
-      if(!service) throw new Error(`service ${message.service} unknown`)
-      const action = service[message.action]
-      if(!action) throw new Error(`action ${message.action} unknown`)
-      const response = action(message.data)
-      this._handleSendResponse(message.service, message.action, message.id, response)
-    } catch(e) {
-      this._handleSendResponse(message.service, message.action, message.id, null, e.toString())
-    }
+    const { event, data } = message
+    this.handlers.filter(handler => {
+      return handler.event === event
+    }).map(handler => {
+      try {
+        const response = handler.handler(data)
+        this._handleSendResponse(event, message.id, response)
+      } catch(e) {
+        this._handleSendResponse(event, message.id, null, e.toString())
+      }
+    })
   }
 
   _handleRecieveResponse(message) {
@@ -86,12 +85,11 @@ class Pasteur {
     delete this.callbacks[message.id]
   }
 
-  _handleSendResponse(service, action, id, data, error) {
+  _handleSendResponse(event, id, data, error) {
     const message = {
       target: this.targetName,
       id,
-      service,
-      action,
+      event,
       data,
       error
     }

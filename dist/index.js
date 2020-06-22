@@ -14,7 +14,7 @@ var Pasteur = function () {
 
     this.callbacks = {};
     this.debug = null;
-    this.services = null;
+    this.handlers = [];
     this.window = null;
     this.target = null;
     this._handleRecieve = this._handleRecieve.bind(this);
@@ -27,23 +27,22 @@ var Pasteur = function () {
     this.target = config.target;
     this.name = config.name;
     this.targetName = config.targetName || this.name;
-    this.services = config.services || {};
     this.window.addEventListener('message', this._handleRecieve, false);
   }
 
   _createClass(Pasteur, [{
-    key: 'addService',
-    value: function addService(name, service) {
-      this.services[name] = service;
-    }
-  }, {
     key: 'close',
     value: function close() {
       this.window.removeEventListener('message', this._handleRecieve, false);
     }
   }, {
+    key: 'on',
+    value: function on(event, handler) {
+      this.handlers.push({ event: event, handler: handler });
+    }
+  }, {
     key: 'send',
-    value: function send(service, action, data, success, failure) {
+    value: function send(event, data, success, failure) {
       var id = this._getId();
       this.callbacks[id] = {
         success: success,
@@ -52,8 +51,7 @@ var Pasteur = function () {
       var message = {
         target: this.targetName,
         id: id,
-        service: service,
-        action: action,
+        event: event,
         data: data
       };
       if (this.debug) console.log(this.name + ': sending request to ' + this.targetName, message);
@@ -86,16 +84,21 @@ var Pasteur = function () {
   }, {
     key: '_handleRecieveRequest',
     value: function _handleRecieveRequest(message) {
-      try {
-        var service = this.services[message.service];
-        if (!service) throw new Error('service ' + message.service + ' unknown');
-        var action = service[message.action];
-        if (!action) throw new Error('action ' + message.action + ' unknown');
-        var response = action(message.data);
-        this._handleSendResponse(message.service, message.action, message.id, response);
-      } catch (e) {
-        this._handleSendResponse(message.service, message.action, message.id, null, e.toString());
-      }
+      var _this = this;
+
+      var event = message.event,
+          data = message.data;
+
+      this.handlers.filter(function (handler) {
+        return handler.event === event;
+      }).map(function (handler) {
+        try {
+          var response = handler.handler(data);
+          _this._handleSendResponse(event, message.id, response);
+        } catch (e) {
+          _this._handleSendResponse(event, message.id, null, e.toString());
+        }
+      });
     }
   }, {
     key: '_handleRecieveResponse',
@@ -107,12 +110,11 @@ var Pasteur = function () {
     }
   }, {
     key: '_handleSendResponse',
-    value: function _handleSendResponse(service, action, id, data, error) {
+    value: function _handleSendResponse(event, id, data, error) {
       var message = {
         target: this.targetName,
         id: id,
-        service: service,
-        action: action,
+        event: event,
         data: data,
         error: error
       };
