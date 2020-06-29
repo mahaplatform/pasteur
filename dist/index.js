@@ -28,7 +28,7 @@ var Pasteur = function () {
     this._handleRecieveResponse = this._handleRecieveResponse.bind(this);
     this._handleSendResponse = this._handleSendResponse.bind(this);
 
-    this.debug = config.debug || _qs2.default.parse(window.location.search.substr(1)).log !== undefined;
+    this.debug = config.debug || _qs2.default.parse(window.parent.location.search.substr(1)).log !== undefined;
     this.window = config.window;
     this.target = config.target;
     this.name = config.name;
