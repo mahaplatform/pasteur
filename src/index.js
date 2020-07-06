@@ -1,5 +1,3 @@
-import qs from 'qs'
-
 class Pasteur {
 
   callbacks = {}
@@ -14,7 +12,7 @@ class Pasteur {
   _handleSendResponse = this._handleSendResponse.bind(this)
 
   constructor(config) {
-    this.debug = config.debug || qs.parse(window.parent.location.search.substr(1)).log !== undefined
+    this.debug = config.debug
     this.window = config.window
     this.target = config.target
     this.name = config.name
