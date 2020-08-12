@@ -68,7 +68,7 @@ class Pasteur {
     const { event, data } = message
     await Promise.mapSeries(this.handlers.filter(handler => {
       return handler.event === event
-    }), async () => {
+    }), async (handler) => {
       try {
         const response = await handler.handler(data)
         this._handleSendResponse(event, message.id, response)

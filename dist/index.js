@@ -178,36 +178,42 @@ var Pasteur = function () {
                 _context4.next = 3;
                 return (0, _bluebird.mapSeries)(this.handlers.filter(function (handler) {
                   return handler.event === event;
-                }), (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee3() {
-                  var response;
-                  return _regenerator2.default.wrap(function _callee3$(_context3) {
-                    while (1) {
-                      switch (_context3.prev = _context3.next) {
-                        case 0:
-                          _context3.prev = 0;
-                          _context3.next = 3;
-                          return handler.handler(data);
+                }), function () {
+                  var _ref4 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee3(handler) {
+                    var response;
+                    return _regenerator2.default.wrap(function _callee3$(_context3) {
+                      while (1) {
+                        switch (_context3.prev = _context3.next) {
+                          case 0:
+                            _context3.prev = 0;
+                            _context3.next = 3;
+                            return handler.handler(data);
 
-                        case 3:
-                          response = _context3.sent;
+                          case 3:
+                            response = _context3.sent;
 
-                          _this._handleSendResponse(event, message.id, response);
-                          _context3.next = 10;
-                          break;
+                            _this._handleSendResponse(event, message.id, response);
+                            _context3.next = 10;
+                            break;
 
-                        case 7:
-                          _context3.prev = 7;
-                          _context3.t0 = _context3['catch'](0);
+                          case 7:
+                            _context3.prev = 7;
+                            _context3.t0 = _context3['catch'](0);
 
-                          _this._handleSendResponse(event, message.id, null, _context3.t0.toString());
+                            _this._handleSendResponse(event, message.id, null, _context3.t0.toString());
 
-                        case 10:
-                        case 'end':
-                          return _context3.stop();
+                          case 10:
+                          case 'end':
+                            return _context3.stop();
+                        }
                       }
-                    }
-                  }, _callee3, _this, [[0, 7]]);
-                })));
+                    }, _callee3, _this, [[0, 7]]);
+                  }));
+
+                  return function (_x4) {
+                    return _ref4.apply(this, arguments);
+                  };
+                }());
 
               case 3:
               case 'end':
@@ -267,7 +273,7 @@ var Pasteur = function () {
         }, _callee5, this);
       }));
 
-      function _handleRecieveResponse(_x4) {
+      function _handleRecieveResponse(_x5) {
         return _ref5.apply(this, arguments);
       }
 
@@ -313,7 +319,7 @@ var Pasteur = function () {
         }, _callee6, this);
       }));
 
-      function _handleSuccess(_x5) {
+      function _handleSuccess(_x6) {
         return _ref6.apply(this, arguments);
       }
 
