@@ -4,14 +4,29 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+var _bluebird = require('bluebird');
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+var _regenerator = require('babel-runtime/regenerator');
+
+var _regenerator2 = _interopRequireDefault(_regenerator);
+
+var _asyncToGenerator2 = require('babel-runtime/helpers/asyncToGenerator');
+
+var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
+
+var _classCallCheck2 = require('babel-runtime/helpers/classCallCheck');
+
+var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+
+var _createClass2 = require('babel-runtime/helpers/createClass');
+
+var _createClass3 = _interopRequireDefault(_createClass2);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var Pasteur = function () {
   function Pasteur(config) {
-    _classCallCheck(this, Pasteur);
-
+    (0, _classCallCheck3.default)(this, Pasteur);
     this.callbacks = {};
     this.debug = null;
     this.handlers = [];
@@ -30,7 +45,7 @@ var Pasteur = function () {
     this.window.addEventListener('message', this._handleRecieve, false);
   }
 
-  _createClass(Pasteur, [{
+  (0, _createClass3.default)(Pasteur, [{
     key: 'close',
     value: function close() {
       this.window.removeEventListener('message', this._handleRecieve, false);
@@ -67,47 +82,197 @@ var Pasteur = function () {
     }
   }, {
     key: '_handleFailure',
-    value: function _handleFailure(message) {
-      var failure = this.callbacks[message.id].failure;
+    value: function () {
+      var _ref = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee(message) {
+        var failure;
+        return _regenerator2.default.wrap(function _callee$(_context) {
+          while (1) {
+            switch (_context.prev = _context.next) {
+              case 0:
+                failure = this.callbacks[message.id].failure;
 
-      if (failure) failure(message.error);
-    }
+                if (!failure) {
+                  _context.next = 4;
+                  break;
+                }
+
+                _context.next = 4;
+                return failure(message.error);
+
+              case 4:
+              case 'end':
+                return _context.stop();
+            }
+          }
+        }, _callee, this);
+      }));
+
+      function _handleFailure(_x) {
+        return _ref.apply(this, arguments);
+      }
+
+      return _handleFailure;
+    }()
   }, {
     key: '_handleRecieve',
-    value: function _handleRecieve(e) {
-      var message = e.data;
-      if (message.target !== this.name) return;
-      if (this.debug) console.log(this.name + ': received from ' + this.targetName, message);
-      if (this.callbacks[message.id]) return this._handleRecieveResponse(message);
-      this._handleRecieveRequest(message);
-    }
+    value: function () {
+      var _ref2 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee2(e) {
+        var message;
+        return _regenerator2.default.wrap(function _callee2$(_context2) {
+          while (1) {
+            switch (_context2.prev = _context2.next) {
+              case 0:
+                message = e.data;
+
+                if (!(message.target !== this.name)) {
+                  _context2.next = 3;
+                  break;
+                }
+
+                return _context2.abrupt('return');
+
+              case 3:
+                if (this.debug) console.log(this.name + ': received from ' + this.targetName, message);
+
+                if (!this.callbacks[message.id]) {
+                  _context2.next = 8;
+                  break;
+                }
+
+                _context2.next = 7;
+                return this._handleRecieveResponse(message);
+
+              case 7:
+                return _context2.abrupt('return', _context2.sent);
+
+              case 8:
+                _context2.next = 10;
+                return this._handleRecieveRequest(message);
+
+              case 10:
+              case 'end':
+                return _context2.stop();
+            }
+          }
+        }, _callee2, this);
+      }));
+
+      function _handleRecieve(_x2) {
+        return _ref2.apply(this, arguments);
+      }
+
+      return _handleRecieve;
+    }()
   }, {
     key: '_handleRecieveRequest',
-    value: function _handleRecieveRequest(message) {
-      var _this = this;
+    value: function () {
+      var _ref3 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee4(message) {
+        var _this = this;
 
-      var event = message.event,
-          data = message.data;
+        var event, data;
+        return _regenerator2.default.wrap(function _callee4$(_context4) {
+          while (1) {
+            switch (_context4.prev = _context4.next) {
+              case 0:
+                event = message.event, data = message.data;
+                _context4.next = 3;
+                return (0, _bluebird.mapSeries)(this.handlers.filter(function (handler) {
+                  return handler.event === event;
+                }), (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee3() {
+                  var response;
+                  return _regenerator2.default.wrap(function _callee3$(_context3) {
+                    while (1) {
+                      switch (_context3.prev = _context3.next) {
+                        case 0:
+                          _context3.prev = 0;
+                          _context3.next = 3;
+                          return handler.handler(data);
 
-      this.handlers.filter(function (handler) {
-        return handler.event === event;
-      }).map(function (handler) {
-        try {
-          var response = handler.handler(data);
-          _this._handleSendResponse(event, message.id, response);
-        } catch (e) {
-          _this._handleSendResponse(event, message.id, null, e.toString());
-        }
-      });
-    }
+                        case 3:
+                          response = _context3.sent;
+
+                          _this._handleSendResponse(event, message.id, response);
+                          _context3.next = 10;
+                          break;
+
+                        case 7:
+                          _context3.prev = 7;
+                          _context3.t0 = _context3['catch'](0);
+
+                          _this._handleSendResponse(event, message.id, null, _context3.t0.toString());
+
+                        case 10:
+                        case 'end':
+                          return _context3.stop();
+                      }
+                    }
+                  }, _callee3, _this, [[0, 7]]);
+                })));
+
+              case 3:
+              case 'end':
+                return _context4.stop();
+            }
+          }
+        }, _callee4, this);
+      }));
+
+      function _handleRecieveRequest(_x3) {
+        return _ref3.apply(this, arguments);
+      }
+
+      return _handleRecieveRequest;
+    }()
   }, {
     key: '_handleRecieveResponse',
-    value: function _handleRecieveResponse(message) {
-      if (!this.callbacks[message.id]) return;
-      if (message.error) this._handleFailure(message);
-      if (message.data) this._handleSuccess(message);
-      delete this.callbacks[message.id];
-    }
+    value: function () {
+      var _ref5 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee5(message) {
+        return _regenerator2.default.wrap(function _callee5$(_context5) {
+          while (1) {
+            switch (_context5.prev = _context5.next) {
+              case 0:
+                if (this.callbacks[message.id]) {
+                  _context5.next = 2;
+                  break;
+                }
+
+                return _context5.abrupt('return');
+
+              case 2:
+                if (!message.error) {
+                  _context5.next = 5;
+                  break;
+                }
+
+                _context5.next = 5;
+                return this._handleFailure(message);
+
+              case 5:
+                if (!message.data) {
+                  _context5.next = 8;
+                  break;
+                }
+
+                _context5.next = 8;
+                return this._handleSuccess(message);
+
+              case 8:
+                delete this.callbacks[message.id];
+
+              case 9:
+              case 'end':
+                return _context5.stop();
+            }
+          }
+        }, _callee5, this);
+      }));
+
+      function _handleRecieveResponse(_x4) {
+        return _ref5.apply(this, arguments);
+      }
+
+      return _handleRecieveResponse;
+    }()
   }, {
     key: '_handleSendResponse',
     value: function _handleSendResponse(event, id, data, error) {
@@ -123,13 +288,38 @@ var Pasteur = function () {
     }
   }, {
     key: '_handleSuccess',
-    value: function _handleSuccess(message) {
-      var success = this.callbacks[message.id].success;
+    value: function () {
+      var _ref6 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee6(message) {
+        var success;
+        return _regenerator2.default.wrap(function _callee6$(_context6) {
+          while (1) {
+            switch (_context6.prev = _context6.next) {
+              case 0:
+                success = this.callbacks[message.id].success;
 
-      if (success) success(message.data);
-    }
+                if (!success) {
+                  _context6.next = 4;
+                  break;
+                }
+
+                _context6.next = 4;
+                return success(message.data);
+
+              case 4:
+              case 'end':
+                return _context6.stop();
+            }
+          }
+        }, _callee6, this);
+      }));
+
+      function _handleSuccess(_x5) {
+        return _ref6.apply(this, arguments);
+      }
+
+      return _handleSuccess;
+    }()
   }]);
-
   return Pasteur;
 }();
 

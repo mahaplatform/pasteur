@@ -51,26 +51,26 @@ class Pasteur {
     return random.toString(36)
   }
 
-  _handleFailure(message) {
+  async _handleFailure(message) {
     const { failure } = this.callbacks[message.id]
-    if(failure) failure(message.error)
+    if(failure) await failure(message.error)
   }
 
-  _handleRecieve(e) {
+  async _handleRecieve(e) {
     const message = e.data
     if(message.target !== this.name) return
     if(this.debug) console.log(`${this.name}: received from ${this.targetName}`, message)
-    if(this.callbacks[message.id]) return this._handleRecieveResponse(message)
-    this._handleRecieveRequest(message)
+    if(this.callbacks[message.id]) return await this._handleRecieveResponse(message)
+    await this._handleRecieveRequest(message)
   }
 
-  _handleRecieveRequest(message) {
+  async _handleRecieveRequest(message) {
     const { event, data } = message
-    this.handlers.filter(handler => {
+    await Promise.mapSeries(this.handlers.filter(handler => {
       return handler.event === event
-    }).map(handler => {
+    }), async () => {
       try {
-        const response = handler.handler(data)
+        const response = await handler.handler(data)
         this._handleSendResponse(event, message.id, response)
       } catch(e) {
         this._handleSendResponse(event, message.id, null, e.toString())
@@ -78,10 +78,10 @@ class Pasteur {
     })
   }
 
-  _handleRecieveResponse(message) {
+  async _handleRecieveResponse(message) {
     if(!this.callbacks[message.id]) return
-    if(message.error) this._handleFailure(message)
-    if(message.data) this._handleSuccess(message)
+    if(message.error) await this._handleFailure(message)
+    if(message.data) await this._handleSuccess(message)
     delete this.callbacks[message.id]
   }
 
@@ -97,9 +97,9 @@ class Pasteur {
     this.target.postMessage(message, '*')
   }
 
-  _handleSuccess(message) {
+  async _handleSuccess(message) {
     const { success } = this.callbacks[message.id]
-    if(success) success(message.data)
+    if(success) await success(message.data)
   }
 
 }
