@@ -7,6 +7,8 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports["default"] = void 0;
 
+var _bluebird = require("bluebird");
+
 var _regenerator = _interopRequireDefault(require("@babel/runtime/regenerator"));
 
 var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/asyncToGenerator"));
@@ -172,7 +174,7 @@ var Pasteur = /*#__PURE__*/function () {
               case 0:
                 event = message.event, data = message.data;
                 _context4.next = 3;
-                return Promise.mapSeries(this.handlers.filter(function (handler) {
+                return (0, _bluebird.mapSeries)(this.handlers.filter(function (handler) {
                   return handler.event === event;
                 }), /*#__PURE__*/function () {
                   var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee3(handler) {
