@@ -1,3 +1,5 @@
+import Promise from 'bluebird'
+
 class Pasteur {
 
   callbacks = {}

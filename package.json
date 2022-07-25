@@ -1,27 +1,23 @@
 {
   "name": "pasteur",
-  "version": "1.0.15",
+  "version": "1.1.0",
   "description": "A library for intra window communication",
   "main": "dist/index.js",
   "license": "ISC",
-  "author": "Greg Kops <greg@thinktopography.com>",
+  "author": "Greg Kops <greg@mworks.digital>",
   "repository": "mahaplatform/pasteur",
   "scripts": {
-    "build": "rm -rf ./dist && npx babel ./src --out-dir ./dist"
+    "build": "rm -rf ./dist && npx swc ./src -d ./dist"
   },
   "bugs": {
     "url": "https://github.com/mahaplatform/pasteur/issues"
   },
   "homepage": "https://github.com/mahaplatform/pasteur#readme",
   "devDependencies": {
-    "@babel/cli": "^7.12.10",
-    "@babel/core": "^7.12.10",
-    "@babel/plugin-proposal-class-properties": "^7.12.1",
-    "@babel/plugin-transform-runtime": "^7.12.10",
-    "@babel/preset-env": "^7.12.10",
-    "@babel/runtime": "^7.12.5",
-    "babel-plugin-transform-promise-to-bluebird": "^2.0.0",
-    "eslint": "^6.4.0"
+    "@swc/cli": "^0.1.57",
+    "@swc/core": "^1.2.218"
   },
-  "dependencies": {}
+  "dependencies": {
+    "bluebird": "^3.7.2"
+  }
 }
